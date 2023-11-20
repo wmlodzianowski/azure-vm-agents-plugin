@@ -30,8 +30,13 @@ import org.kohsuke.stapler.HttpRedirect;
 import org.kohsuke.stapler.HttpResponse;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static com.microsoft.azure.vmagent.util.Constants.DEFAULT_SSH_CONNECT_RETRY_COUNT;
+import static com.microsoft.azure.vmagent.util.Constants.SSH_CONNECT_RETRY_INTERNAL_SECONDS;
 
 public class AzureVMComputer extends AbstractCloudComputer<AzureVMAgent> implements TrackedItem {
 
@@ -148,5 +153,23 @@ public class AzureVMComputer extends AbstractCloudComputer<AzureVMAgent> impleme
             }
         }
         return null;
+    }
+
+    void retrySshConnect() throws ExecutionException, InterruptedException {
+        int count = 0;
+        while (true) {
+            try {
+                this.connect(false).get();
+                return;
+            } catch (InterruptedException | ExecutionException e) {
+                if (count >= DEFAULT_SSH_CONNECT_RETRY_COUNT) {
+                    throw e;
+                }
+                LOGGER.warning(String.format("Fail to connect %s with SSH for %s", this.getName(),
+                        e.getMessage()));
+                count++;
+                TimeUnit.SECONDS.sleep(SSH_CONNECT_RETRY_INTERNAL_SECONDS);
+            }
+        }
     }
 }

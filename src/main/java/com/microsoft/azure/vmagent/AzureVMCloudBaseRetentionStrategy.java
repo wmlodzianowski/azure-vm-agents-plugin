@@ -5,6 +5,7 @@ import hudson.slaves.RetentionStrategy;
 import jenkins.model.Jenkins;
 
 import java.io.Serializable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +18,12 @@ public abstract class AzureVMCloudBaseRetentionStrategy extends RetentionStrateg
 
     public void start(AzureVMComputer azureComputer) {
         LOGGER.log(Level.INFO, "Starting azureComputer {0}", azureComputer.getDisplayName());
-        azureComputer.connect(false);
+        try {
+            azureComputer.retrySshConnect();
+        } catch (InterruptedException | ExecutionException e) {
+            LOGGER.warning(String.format("Fail to start %s with SSH for %s", azureComputer.getName(),
+                    e.getMessage()));
+        }
         resetShutdownVMStatus(azureComputer.getNode());
     }
     public void resetShutdownVMStatus(final AzureVMAgent agent) {

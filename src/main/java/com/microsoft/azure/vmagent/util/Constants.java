@@ -242,6 +242,9 @@ public final class Constants {
 
     public static final String VERSION_LATEST = "latest";
 
+    public static final int DEFAULT_SSH_CONNECT_RETRY_COUNT = 3;
+    public static final int SSH_CONNECT_RETRY_INTERNAL_SECONDS = 20;
+
     /**
      * AI constants.
      */
