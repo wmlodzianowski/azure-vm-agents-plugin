@@ -138,15 +138,6 @@ public class AzureVMCloudRetensionStrategy extends AzureVMCloudBaseRetentionStra
     }
 
     @Override
-    public void start(AzureVMComputer azureComputer) {
-        //TODO: check when this method is getting called and add code accordingly
-        LOGGER.log(Level.INFO, "Starting azureComputer {0}",
-                azureComputer.getDisplayName());
-        azureComputer.connect(false);
-        resetShutdownVMStatus(azureComputer.getNode());
-    }
-
-    @Override
     public DescriptorImpl getDescriptor() {
         return DESCRIPTOR;
     }

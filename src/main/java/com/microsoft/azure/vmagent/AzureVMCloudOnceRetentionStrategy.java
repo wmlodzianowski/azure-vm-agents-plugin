@@ -41,13 +41,7 @@ public class AzureVMCloudOnceRetentionStrategy extends AzureVMCloudBaseRetention
         return 1;
     }
 
-    @Override
-    public void start(AzureVMComputer azureComputer) {
-        LOGGER.log(Level.FINE, "Starting azureComputer name {0}",
-                azureComputer.getDisplayName());
-        azureComputer.connect(false);
-        resetShutdownVMStatus(azureComputer.getNode());
-    }
+
 
     @Override
     public void taskAccepted(Executor executor, Queue.Task task) {
